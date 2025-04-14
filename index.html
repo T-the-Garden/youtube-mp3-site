@@ -2,55 +2,66 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>YouTube MP3 추출기</title>
+  <title>YouTube 미디어 추출기</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      width: 300px;
-      font-size: 16px;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    input, select, button { padding: 10px; margin: 10px; width: 300px; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h1>YouTube 음원 추출기 🎵</h1>
-  <p>유튜브 링크를 입력하세요.</p>
-  <input type="text" id="youtubeURL" placeholder="https://www.youtube.com/watch?v=xxxxx">
-  <button onclick="checkAndDownload()">MP3 다운로드</button>
+  <h1>YouTube 미디어 추출기 🎬🎵</h1>
+  <p>유튜브 링크를 입력하고, 다운로드 형식을 선택하세요.</p>
+
+  <input type="text" id="youtubeURL" placeholder="https://www.youtube.com/watch?v=xxxxx"><br>
+
+  <select id="mediaType">
+    <option value="audio">오디오</option>
+    <option value="video">비디오</option>
+  </select>
+
+  <select id="quality">
+    <!-- 동적으로 변경됨 -->
+  </select><br>
+
+  <button onclick="download()">다운로드</button>
 
   <script>
-    async function checkAndDownload() {
+    const audioOptions = [
+      { value: 'mp3', label: 'MP3 (320kbps)' },
+      { value: 'wav', label: 'WAV' }
+    ];
+    const videoOptions = [
+      { value: 'fhd', label: 'MP4 (FHD)' },
+      { value: 'fhd60', label: 'MP4 (FHD 60p)' },
+      { value: '4k', label: 'MP4 (4K)' },
+      { value: '4k60', label: 'MP4 (4K 60p)' }
+    ];
+
+    const mediaType = document.getElementById('mediaType');
+    const quality = document.getElementById('quality');
+
+    mediaType.addEventListener('change', updateQualityOptions);
+
+    function updateQualityOptions() {
+      const isAudio = mediaType.value === 'audio';
+      const options = isAudio ? audioOptions : videoOptions;
+      quality.innerHTML = options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('');
+    }
+
+    updateQualityOptions(); // 최초 실행
+
+    function download() {
       const url = document.getElementById('youtubeURL').value;
+      const type = mediaType.value;
+      const qual = quality.value;
+
       if (!url) {
         alert("유튜브 링크를 입력해주세요.");
         return;
       }
 
-      const serverUrl = `https://youtube-mp3-server.onrender.com/download?url=${encodeURIComponent(url)}`;
-
-      try {
-        const response = await fetch(serverUrl, { method: 'GET' });
-
-        if (response.status === 403) {
-          const text = await response.text();
-          alert(text);
-        } else if (response.status === 500) {
-          const text = await response.text();
-          alert("❌ 처리 중 오류 발생: " + text);
-        } else if (response.status === 200) {
-          window.open(serverUrl, '_blank');
-        } else {
-          alert("⚠️ 예기치 않은 응답이 발생했습니다.");
-        }
-      } catch (err) {
-        alert("❌ 서버와 통신할 수 없습니다.");
-        console.error(err);
-      }
+      const serverUrl = `https://youtube-mp3-server.onrender.com/download?url=${encodeURIComponent(url)}&type=${type}&quality=${qual}`;
+      window.open(serverUrl, "_blank");
     }
   </script>
 </body>
