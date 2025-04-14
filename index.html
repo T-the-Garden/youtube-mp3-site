@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube MP3 추출기</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      font-size: 16px;
+    }
+    iframe {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>YouTube 음원 추출기 🎵</h1>
+  <p>아래에 유튜브 링크를 붙여넣고 MP3로 변환하세요.</p>
+  <input type="text" id="youtubeURL" placeholder="https://www.youtube.com/watch?v=xxxxx">
+  <button onclick="extractMP3()">MP3 다운로드</button>
+  <div id="result"></div>
+
+  <script>
+    function extractMP3() {
+      const url = document.getElementById('youtubeURL').value;
+      const encoded = encodeURIComponent(url);
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<iframe src="https://api.vevioz.com/api/button/mp3/${encoded}" width="100%" height="50" frameborder="0"></iframe>`;
+    }
+  </script>
+</body>
+</html>
