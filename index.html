@@ -21,17 +21,36 @@
   <h1>YouTube 음원 추출기 🎵</h1>
   <p>유튜브 링크를 입력하세요.</p>
   <input type="text" id="youtubeURL" placeholder="https://www.youtube.com/watch?v=xxxxx">
-  <button onclick="downloadMP3()">MP3 다운로드</button>
+  <button onclick="checkAndDownload()">MP3 다운로드</button>
 
   <script>
-    function downloadMP3() {
+    async function checkAndDownload() {
       const url = document.getElementById('youtubeURL').value;
       if (!url) {
-        alert("유튜브 링크를 입력하세요.");
+        alert("유튜브 링크를 입력해주세요.");
         return;
       }
-      const downloadUrl = `https://youtube-mp3-server.onrender.com/download?url=${encodeURIComponent(url)}`;
-      window.open(downloadUrl, '_blank');
+
+      const serverUrl = `https://youtube-mp3-server.onrender.com/download?url=${encodeURIComponent(url)}`;
+
+      try {
+        const response = await fetch(serverUrl, { method: 'GET' });
+
+        if (response.status === 403) {
+          const text = await response.text();
+          alert(text);
+        } else if (response.status === 500) {
+          const text = await response.text();
+          alert("❌ 처리 중 오류 발생: " + text);
+        } else if (response.status === 200) {
+          window.open(serverUrl, '_blank');
+        } else {
+          alert("⚠️ 예기치 않은 응답이 발생했습니다.");
+        }
+      } catch (err) {
+        alert("❌ 서버와 통신할 수 없습니다.");
+        console.error(err);
+      }
     }
   </script>
 </body>
