@@ -15,24 +15,23 @@
       width: 300px;
       font-size: 16px;
     }
-    iframe {
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
   <h1>YouTube 음원 추출기 🎵</h1>
-  <p>아래에 유튜브 링크를 붙여넣고 MP3로 변환하세요.</p>
+  <p>유튜브 링크를 입력하세요.</p>
   <input type="text" id="youtubeURL" placeholder="https://www.youtube.com/watch?v=xxxxx">
-  <button onclick="extractMP3()">MP3 다운로드</button>
-  <div id="result"></div>
+  <button onclick="downloadMP3()">MP3 다운로드</button>
 
   <script>
-    function extractMP3() {
+    function downloadMP3() {
       const url = document.getElementById('youtubeURL').value;
-      const encoded = encodeURIComponent(url);
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `<iframe src="https://api.vevioz.com/api/button/mp3/${encoded}" width="100%" height="50" frameborder="0"></iframe>`;
+      if (!url) {
+        alert("유튜브 링크를 입력하세요.");
+        return;
+      }
+      const downloadUrl = `https://youtube-mp3-server.onrender.com/download?url=${encodeURIComponent(url)}`;
+      window.open(downloadUrl, '_blank');
     }
   </script>
 </body>
